@@ -151,7 +151,7 @@ def get_input():
                         log_input_to_csv(text)
                         text = ''
                         screen.blit(warning_img, (WW // 2 - warning_img.get_width() // 2, 400))
-                        pygame.display.update()
+                        pygame.display.flip()
                         pygame.time.wait(1000)
                         continue
                 elif event.key == pygame.K_BACKSPACE:
@@ -182,7 +182,7 @@ def display_history():
         font = pygame.font.Font("font/8bit.TTF", 20)
         text = font.render("No input history available", True, WHITE)
         screen.blit(text, (WW // 2 - text.get_width() // 2, WH // 2)) 
-        pygame.display.update()
+        pygame.display.flip()
         pygame.time.wait(2000)  
         play() 
 
@@ -197,7 +197,7 @@ def display_history():
             screen.blit(entry_text, (WW // 2 - entry_text.get_width() // 2, y_offset))
             y_offset += 25  
 
-    pygame.display.update()  
+    pygame.display.flip()  
     pygame.time.wait(5000)  # Tampilkan history selama (delay) 5 detik
 
 def button(image, size=1.0, x_offset=0, y_offset=0):
