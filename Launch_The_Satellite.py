@@ -50,45 +50,30 @@ earth_img = pygame.transform.scale(earth_img, (200, 200))
 satellite_img = pygame.transform.scale(satellite_img, (50, 50))
 background_img = pygame.transform.scale(background_img, (WW, WH))
 
-def resize_button(image, target_width=250, target_height=90):
+def resize_image(image, target_width=250, target_height=90):
     return pygame.transform.scale(image, (target_width, target_height))
 
-def center_align(image_width, image_height, offset_y=0):
-    x = (WW - image_width) // 2
-    y = (WH - image_height) // 2 + offset_y
+def center_menu_button(image_width, image_height, xoff=0, yoff=0):
+    x = (WW - image_width) // 2 + xoff
+    y = (WH - image_height) // 2 + yoff
     return x, y
 
-def resize_image(image, max_width, max_height):
-    width, height = image.get_size()
-    aspect_ratio = width / height
-    
-    if width > height:
-        new_width = min(max_width, width)
-        new_height = int(new_width / aspect_ratio)
-    else:
-        new_height = min(max_height, height)
-        new_width = int(new_height * aspect_ratio)
-    
-    return pygame.transform.scale(image, (new_width, new_height))
+play_unp = resize_image(play_unp)
+play_prs = resize_image(play_prs)
+htp_unp = resize_image(htp_unp)
+htp_prs = resize_image(htp_prs)
+quit_unp = resize_image(quit_unp)
+quit_prs = resize_image(quit_prs)
 
-play_unp = resize_button(play_unp)
-play_prs = resize_button(play_prs)
-htp_unp = resize_button(htp_unp)
-htp_prs = resize_button(htp_prs)
-quit_unp = resize_button(quit_unp)
-quit_prs = resize_button(quit_prs)
+warning_img = resize_image(warning_img)
+play_img = resize_image(play_img)
 
-warning_img = resize_image(warning_img, WW // 2, WH // 3)
-play_img = resize_image(play_img, WW // 2, WH // 3)
-input_png = resize_image(input_png, WW // 2, WH // 3)
+play_x, play_y = center_menu_button(play_unp.get_width(), play_unp.get_height(), 0, 20)
+htp_x, htp_y = center_menu_button(htp_unp.get_width(), htp_unp.get_height(), 0, 110)
+quit_x, quit_y = center_menu_button(quit_unp.get_width(), quit_unp.get_height(), 0, 200)
 
-button_gap = 20
-play_x, play_y = center_align(play_unp.get_width(), play_unp.get_height(), 20)
-htp_x, htp_y = center_align(htp_unp.get_width(), htp_unp.get_height(), 110)
-quit_x, quit_y = center_align(quit_unp.get_width(), quit_unp.get_height(), 200)
-
-font = pygame.font.Font("font/8bit.TTF", 48)
-input_box = pygame.Rect(WW // 2 - 100, WH // 2 - 50, 200, 50)
+font = pygame.font.Font("font/8bit.TTF", 43)
+input_box = pygame.Rect(WW // 2 - 123, WH // 2, 250, 50)
 active = False
 text = ''
 color_inactive = pygame.Color(TURQUOISE)
@@ -113,9 +98,9 @@ def log_input_to_csv(vs):
             elif 0 < inputv < v0:
                 keterangan = "Crash"
             else:
-                keterangan = "Invalid"  # Jika nilai diluar rentang 1-10
+                keterangan = "Invalid"  # Jika nilai diluar rentang
         else:
-            keterangan = "Invalid"  # Jika input diluar rentang 1-10
+            keterangan = "Invalid"  # Jika input diluar rentang
     except ValueError:
         keterangan = "Invalid"
 
@@ -138,12 +123,11 @@ def clear_history():
     with open('input_log.csv', 'w', newline='') as file:
         file.write("Tanggal,Waktu,Input,Keterangan\n")
 
-def draw_input_box():
-    pygame.draw.rect(screen, color, input_box, 2) 
-    screen.blit(text_surface, (input_box.x + 5, input_box.y + 5)) 
-
 def get_input():
     global text, active, color, text_surface, v
+
+    pygame.draw.rect(screen, color, input_box, 3) 
+    screen.blit(text_surface, (input_box.x + 23, input_box.y + 5)) 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -176,29 +160,6 @@ def get_input():
                     text += event.unicode
                 text_surface = font.render(text, True, WHITE)
     return None
-
-#Button Function
-def buttonfunction(x, y, bs, bt):
-    if bt == "play":
-        button = play_prs if bs else play_unp
-    elif bt == "htp":
-        button = htp_prs if bs else htp_unp
-    elif bt == "quit":
-        button = quit_prs if bs else quit_unp
-    screen.blit(button, (x, y))
-
-def backbutton():
-    back_button_img_resized = resize_image(back_button_img, 200, 100)
-    backbutton_width = back_button_img_resized.get_width()
-    backbutton_height = back_button_img_resized.get_height()
-
-    x_axis, y_axis = 55, 15
-    backbutton_x = WW - backbutton_width - 12.5 + x_axis
-    backbutton_y = WH - backbutton_height - 12.5 + y_axis
-
-    screen.blit(back_button_img_resized, (backbutton_x, backbutton_y))
-
-    return backbutton_x, backbutton_y, backbutton_width, backbutton_height
 
 def read_log_history():
     log_entries = []
@@ -239,24 +200,28 @@ def display_history():
     pygame.display.update()  
     pygame.time.wait(5000)  # Tampilkan history selama (delay) 5 detik
 
-def history_button():
-    history_button_img_resized = resize_image(history_button_img, 200, 50) 
-    history_button_width = history_button_img_resized.get_width()
-    history_button_height = history_button_img_resized.get_height()
+def button(image, size=1.0, x_offset=0, y_offset=0):
 
-    history_button_x = (WW - history_button_width) // 2
-    history_button_y = WH - history_button_height - 175 
+    button_width = int(250 * size)
+    button_height = int(90 * size)
 
-    screen.blit(history_button_img_resized, (history_button_x, history_button_y))
+    resized_image = resize_image(image, button_width, button_height)
 
-    return history_button_x, history_button_y, history_button_width, history_button_height
+    x_pos = (WW - button_width) // 2 + x_offset
+    y_pos = (WH - button_height) // 2 + y_offset
 
-def clear_button():
-    clear_button_img_resized = resize_image(delete_button_img, 200, 50)
-    clear_button_x = (WW - clear_button_img_resized.get_width()) // 2
-    clear_button_y = WH - clear_button_img_resized.get_height() - 100
-    screen.blit(clear_button_img_resized, (clear_button_x, clear_button_y))
-    return clear_button_x, clear_button_y, clear_button_img_resized.get_width(), clear_button_img_resized.get_height()
+    screen.blit(resized_image, (x_pos, y_pos))
+
+    return x_pos, y_pos, button_width, button_height
+
+def buttonfunction(x, y, bs, bt):
+    if bt == "play":
+        button = play_prs if bs else play_unp
+    elif bt == "htp":
+        button = htp_prs if bs else htp_unp
+    elif bt == "quit":
+        button = quit_prs if bs else quit_unp
+    screen.blit(button, (x, y))
 
 def play():
     v = None
@@ -264,8 +229,7 @@ def play():
         screen.fill(WHITE)
         screen.blit(gameBG, (0, 0))
         screen.blit(play_img, (WW // 2 - play_img.get_width() // 2, 250))
-        screen.blit(input_png, (WW // 2 - input_png.get_width() // 2, 321))
-        draw_input_box()
+        button(input_png, 1.3, 0, 39)
         input_box.y = 350
 
         v = get_input()
@@ -280,9 +244,9 @@ def play():
             else:
                 break
 
-        backbutton_x, backbutton_y, backbutton_w, backbutton_h = backbutton()
-        history_button_x, history_button_y, history_button_w, history_button_h = history_button()
-        clear_button_x, clear_button_y, clear_button_w, clear_button_h = clear_button()
+        backbutton_x, backbutton_y, backbutton_w, backbutton_h = button(back_button_img, 0.7, 205, 305)
+        history_button_x, history_button_y, history_button_w, history_button_h = button(history_button_img, 1, 0, 125)
+        clear_button_x, clear_button_y, clear_button_w, clear_button_h = button(delete_button_img, 1, 0, 200)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -314,13 +278,13 @@ def menu_htp(image_path):
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                backbuttonx, backbuttony, backbutton_w, backbutton_h = backbutton()
+                backbuttonx, backbuttony, backbutton_w, backbutton_h = button(back_button_img, 0.7, 205, 305)
                 if backbuttonx <= event.pos[0] <= backbuttonx + backbutton_w and backbuttony <= event.pos[1] <= backbuttony + backbutton_h:
                     return
         image = pygame.image.load(image_path)
         image = pygame.transform.scale(image, (WW, WH))
         screen.blit(image, (0, 0))
-        backbutton()
+        button(back_button_img, 0.7, 205, 305)
         pygame.display.flip()
     pygame.quit()
 
@@ -358,6 +322,7 @@ def main_menu():
                 elif quit_x <= event.pos[0] <= quit_x + quit_unp.get_width() and \
                      quit_y <= event.pos[1] <= quit_y + quit_unp.get_height():
                     if bs["quit"]:
+                        bs["quit"] = False
                         run = False
         buttonfunction(play_x, play_y, bs["play"], "play")
         buttonfunction(htp_x, htp_y, bs["htp"], "htp")
